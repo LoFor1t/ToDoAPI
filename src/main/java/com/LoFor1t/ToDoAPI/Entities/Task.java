@@ -1,6 +1,7 @@
 package com.LoFor1t.ToDoAPI.Entities;
 
 import com.LoFor1t.ToDoAPI.DataClasses.Priority;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@ToString
 public class Task {
     @Id
     @GeneratedValue
@@ -26,7 +28,9 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate deadLine;
 
+    @Column(name = "is_done")
     private boolean isDone = false;
 }
