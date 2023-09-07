@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/tasks")
 public class TasksController {
@@ -30,7 +32,19 @@ public class TasksController {
 
     @PostMapping
     public ResponseEntity<Task> createNewTask(@Validated @RequestBody Task task) {
+        if (task.getTitle() == null || task.getTitle().isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         taskRepository.save(task);
         return new ResponseEntity<>(task, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Task> getTaskByID(@PathVariable int id) {
+        Optional<Task> task = taskRepository.findById(id);
+        if (task.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(task.get(), HttpStatus.OK);
     }
 }
