@@ -2,6 +2,7 @@ package com.LoFor1t.ToDoAPI.Controllers;
 
 import com.LoFor1t.ToDoAPI.Entities.Task;
 import com.LoFor1t.ToDoAPI.Repositories.TaskRepository;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +20,7 @@ public class TasksController {
         this.taskRepository = taskRepository;
     }
 
+    @Operation(summary = "Get all tasks")
     @GetMapping
     public ResponseEntity<Iterable<Task>> getAllTasks() {
         long count = taskRepository.count();
@@ -30,8 +32,9 @@ public class TasksController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Operation(summary = "Create a new task")
     @PostMapping
-    public ResponseEntity<Task> createNewTask(@Validated @RequestBody Task task) {
+    public ResponseEntity<Task> createNewTask(@RequestBody Task task) {
         if (task.getTitle() == null || task.getTitle().isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -39,6 +42,7 @@ public class TasksController {
         return new ResponseEntity<>(task, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Get a task by ID")
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskByID(@PathVariable int id) {
         Optional<Task> task = taskRepository.findById(id);
