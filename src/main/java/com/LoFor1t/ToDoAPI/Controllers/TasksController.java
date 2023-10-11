@@ -44,11 +44,45 @@ public class TasksController {
 
     @Operation(summary = "Get a task by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskByID(@PathVariable int id) {
+    public ResponseEntity getTaskByID(@PathVariable int id) {
         Optional<Task> task = taskRepository.findById(id);
         if (task.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(task.get(), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "Delete a task by ID")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Task> deleteTaskById(@PathVariable int id) {
+        Optional<Task> task = taskRepository.findById(id);
+        if (task.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        taskRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable int id, @RequestBody Task task) {
+        Optional<Task> taskToUpdate = taskRepository.findById(id);
+        if (taskToUpdate.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        if (task.getTitle() != null && !task.getTitle().isEmpty()) {
+            taskToUpdate.get().setTitle(task.getTitle());
+        }
+        if (task.getDescription() != null && !task.getDescription().isEmpty()) {
+            taskToUpdate.get().setDescription(task.getDescription());
+        }
+        if (task.getPriority() != null) {
+            taskToUpdate.get().setPriority(task.getPriority());
+        }
+        if (task.getDeadLine() != null) {
+            taskToUpdate.get().setDeadLine(task.getDeadLine());
+        }
+        taskToUpdate.get().setDone(task.isDone());
+        taskRepository.save(taskToUpdate.get());
+        return new ResponseEntity<>(taskToUpdate.get(), HttpStatus.OK);
     }
 }
